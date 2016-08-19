@@ -71,7 +71,7 @@ class MaxHeap {
 	}
 
 	isEmpty() {
-		if(this.curSize === 0) return true;
+		if(this.root === null) return true;
 		else return false; 
 	}
 
@@ -100,7 +100,49 @@ class MaxHeap {
 	}
 
 	shiftNodeDown(node) {
-		
+		if (node === null || (node.left === null && node.right === null))
+			return;
+
+		if (node.right === null || node.left.priority > node.right.priority) {
+			if (node.left.priority > node.priority) {
+				var nodeIndex = this.parentNodes.indexOf(node);
+				var childIndex = this.parentNodes.indexOf(node.left);
+
+				if (this.root === node) {
+					this.root = node.left;
+				}
+
+				if (nodeIndex !== -1) {
+					this.parentNodes[nodeIndex] = node.left;
+				}
+				if (childIndex !== -1) {
+					this.parentNodes[childIndex] = node;
+				}
+
+				node.left.swapWithParent();
+				this.shiftNodeDown(node);
+			}
+			
+		} else if (node.left === null || node.left.priority < node.right.priority) {
+			if (node.right.priority > node.priority) {
+				var nodeIndex = this.parentNodes.indexOf(node);
+				var childIndex = this.parentNodes.indexOf(node.right);
+
+				if (nodeIndex !== - 1) {
+					this.parentNodes[nodeIndex] = node.right;
+				}
+				if (childIndex !== -1) {
+					this.parentNodes[childIndex] = node;
+				}
+
+				if (this.root === node) {
+					this.root = node.right;
+				}
+
+				node.right.swapWithParent();
+				this.shiftNodeDown(node);
+			}
+		}		
 	}
 }
 
