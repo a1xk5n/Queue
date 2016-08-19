@@ -96,7 +96,7 @@ class MaxHeap {
 	}
 
 	shiftNodeUp(node) {
-		
+
 	}
 
 	shiftNodeDown(node) {
