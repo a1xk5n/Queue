@@ -8,65 +8,61 @@ class Node {
 	}
 
 	appendChild(node) {
-		if(this.left === null && this.right === null){
+		node.parent = this;
+		if (this.left === null){
 			this.left = node;
-			node.parent = this;
-			this.right = null;
-		} 
-		else if(this.left !== null && this.right === null){
-			this.right = node;
-			node.parent = this;
 		}
-		if(this.left !== null && this.right !== null){
-			return;
+		else if (this.right === null){
+			this.right = node;
 		}
 	}
 
 	removeChild(node) {
-		if(node === this.left){
+		node.parent = null;
+		if (this.left == node){
 			this.left = null;
-			node.parent = null;
 		}
-		else if(node === this.right){
+		else if (this.right == node){
 			this.right = null;
-			node.parent = null;
 		}
-		else throw new Error("Passed node is not a child of this node");
+		else{
+			throw new Error("No such child");
+		}
 	}
 
 	remove() {
-		if(this.parent === null) return;
-		this.parent.removeChild(this);
+		if (this.parent){
+			this.parent.removeChild(this);
+		}
 	}
 
 	swapWithParent() {
-		var swapParent = this.parent,
-			swapChild = this,
-			brother = null,
+		let parent = this.parent,
+			me = this,
+			bro = null,
 			bro_dir,
-			rightIndex = "right",
-			leftIndex = "left";
+			parent_dir;
 
-		if (swapParent){
-			if (swapParent.left == swapChild){
-				brother = swapParent.right;
-				bro_dir = rightIndex;
+		if (parent){
+			if (parent.left == me){
+				bro = parent.right;
+				bro_dir = 'right';
 			}
-			else if (swapParent.right == swapChild){
-				brother = swapParent.left;
-				bro_dir = leftIndex;
+			else if (parent.right == me){
+				bro = parent.left;
+				bro_dir = 'left';
 			}
 		}
 		else{
 			return;
 		}
 
-		if (swapParent.parent){
-			if (swapParent == swapParent.parent.right){
-				swapParent.parent.right = swapChild;
+		if (parent.parent){
+			if (parent == parent.parent.right){
+				parent.parent.right = me;
 			}
-			else if (swapParent == swapParent.parent.left){
-				swapParent.parent.left = swapChild;
+			else if (parent == parent.parent.left){
+				parent.parent.left = me;
 			}
 		}
 
@@ -78,28 +74,30 @@ class Node {
 			this.right.parent = this.parent;
 		}
 		
-		if (swapParent){
+		if (parent){
 			this.parent.left = this.left;
 			this.parent.right = this.right;
-			this.parent = swapParent.parent;
-			swapParent.parent = swapChild;
+			this.parent = parent.parent;
+			parent.parent = me;
 		}
 
-		if (brother){
-			brother.parent = swapChild;
+		if (bro){
+			bro.parent = me;
 		}
 
-		if (bro_dir == rightIndex){
-			swapChild.right = brother;
-			swapChild.left = swapParent;
+		if (bro_dir == 'right'){
+			me.right = bro;
+			me.left = parent;
 		}
-		else if (bro_dir == leftIndex){
-			swapChild.left = brother;
-			swapChild.right = swapParent;
+		else if (bro_dir == 'left'){
+			me.left = bro;
+			me.right = parent;
 		}
-		
+
+
+
 	}
-
 }
 
 module.exports = Node;
+

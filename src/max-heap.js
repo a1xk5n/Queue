@@ -4,93 +4,92 @@ class MaxHeap {
 	constructor() {
 		this.root = null;
 		this.parentNodes = [];
-		this.curSize = 0;
+		this.currentSize = 0;
 	}
 
 	push(data, priority) {
-		let node = new Node(data, priority);
-		this.insertNode(node);
-		this.shiftNodeUp(node);
-		this.curSize++;
+		 var node = new Node(data, priority);
+		 this.insertNode(node);
+		 this.shiftNodeUp(node);
+		 this.currentSize ++;
 	}
 
 	pop() {
 		if (this.root === null)
 			return;
 
-		let detached = this.detachRoot();
-		this.restoreRootFromLastInsertedNode(detached);
+		var detachedRoot = this.detachRoot();
+		this.restoreRootFromLastInsertedNode(detachedRoot);
 		this.shiftNodeDown(this.root);
-		this.curSize --;
-		return detached.data;
+		this.currentSize --;
+		return detachedRoot.data;
 	}
 
 	detachRoot() {
-		if (this.root != null) {
-			var detached = this.root;
-			this.root = null;
-			if(detached.left == null || detached.right == null) {
-				this.parentNodes.shift();
-			}
-			return detached;
-		}
-
+		var detachedRoot = this.root;	
+		if (this.root.left !== null)
+			this.root.left.parent = null;
+		if (this.root.right !== null)
+			this.root.right.parent = null;
+		this.root = null;
+		if (this.parentNodes[0] === detachedRoot)
+			this.parentNodes.shift();		
+		return detachedRoot;
 	}
 
 	restoreRootFromLastInsertedNode(detached) {
-		var last = this.parentNodes[this.parentNodes.length - 1];
-		var lastParent = last.parent;
-		last.remove();
-		if (last === this.parentNodes[0]) {
+		var lastNode = this.parentNodes[this.parentNodes.length - 1];
+		if (this.size() === 1) {
 			this.root = null;
-			this.parentNodes.shift();
 			return;
 		}
-		if (last === detached.left) {
-			last.left = null;
-			last.right = null;
-			last.parent = null;
-			this.parentNodes.shift();
-		} else if (last === detached.right) {
-			last.right = null;
-			last.parent = null;
-			last.left = detached.left;
-			last.left.parent = last;
-			this.parentNodes.unshift(last);
+		var lastNodeParent = lastNode.parent;
+		lastNode.remove();
+		this.root = lastNode;
+		if (lastNode === detached.left) {
+			lastNode.left = null;
+			lastNode.right = null;
+			lastNode.parent = null;
+		} else if (lastNode === detached.right) {
+			lastNode.right = null;
+			lastNode.parent = null;
+			lastNode.left = detached.left;
+			lastNode.left.parent = lastNode;
+			this.parentNodes.unshift(lastNode);
 			this.parentNodes.pop();
 		} else {
-			last.left = detached.left;
-			last.left.parent = last;
-			last.right = detached.right;
-			last.right.parent = last;
-			if (this.parentNodes.indexOf(lastParent) === -1)
-				this.parentNodes.unshift(lastParent);
+			lastNode.left = detached.left;
+			lastNode.left.parent = lastNode;
+			lastNode.right = detached.right;
+			lastNode.right.parent = lastNode;
+			if (this.parentNodes.indexOf(lastNodeParent) === -1)
+				this.parentNodes.unshift(lastNodeParent);
 			this.parentNodes.pop();		
 		}
-		this.root = last;
 	}
 
 	size() {
-		return this.curSize;
+		return this.currentSize;
 	}
 
 	isEmpty() {
-		if(this.root === null) return true;
-		else return false; 
+		if (this.currentSize === 0)
+			return true;
+		else
+			return false;
 	}
 
 	clear() {
 		this.root = null;
 		this.parentNodes = [];
-		this.curSize = 0;
+		this.currentSize = 0;
 	}
 
 	insertNode(node) {
-		if(this.root === null) {
+		if (this.root === null) {
 			this.root = node;
 			this.parentNodes.push(node);
-		}	
-		else{
+		} else {
 			this.parentNodes[0].appendChild(node);
 			this.parentNodes.push(node);
 			if (this.parentNodes[0].right !== null) {
@@ -105,20 +104,16 @@ class MaxHeap {
 			return;
 		}
 
-		var nodeParent = node.parent;
-
 		if (node.parent !== null && node.parent.priority < node.priority) {
-			var nodeIndex = this.parentNodes.indexOf(node);
-			var parentIndex = this.parentNodes.indexOf(nodeParent);
+			var indexOfNode = this.parentNodes.indexOf(node);
+			var indexOfParent = this.parentNodes.indexOf(node.parent);
 
-			if (parentIndex >= 0) {
-				this.parentNodes[parentIndex] = node;				
+			if (indexOfNode !== -1) {
+				this.parentNodes[indexOfNode] = node.parent;
 			}
-
-			if (nodeIndex >= 0) {
-				this.parentNodes[nodeIndex] = nodeParent;
+			if (indexOfParent !== -1) {
+				this.parentNodes[indexOfParent] = node;				
 			}
-			
 			node.swapWithParent();
 			this.shiftNodeUp(node)
 		}
@@ -130,18 +125,18 @@ class MaxHeap {
 
 		if (node.right === null || node.left.priority > node.right.priority) {
 			if (node.left.priority > node.priority) {
-				var nodeIndex = this.parentNodes.indexOf(node);
-				var childIndex = this.parentNodes.indexOf(node.left);
+				var indexOfNode = this.parentNodes.indexOf(node);
+				var indexOfChild = this.parentNodes.indexOf(node.left);
+
+				if (indexOfNode !== -1) {
+					this.parentNodes[indexOfNode] = node.left;
+				}
+				if (indexOfChild !== -1) {
+					this.parentNodes[indexOfChild] = node;
+				}
 
 				if (this.root === node) {
 					this.root = node.left;
-				}
-
-				if (nodeIndex !== -1) {
-					this.parentNodes[nodeIndex] = node.left;
-				}
-				if (childIndex !== -1) {
-					this.parentNodes[childIndex] = node;
 				}
 
 				node.left.swapWithParent();
@@ -150,14 +145,14 @@ class MaxHeap {
 			
 		} else if (node.left === null || node.left.priority < node.right.priority) {
 			if (node.right.priority > node.priority) {
-				var nodeIndex = this.parentNodes.indexOf(node);
-				var childIndex = this.parentNodes.indexOf(node.right);
+				var indexOfNode = this.parentNodes.indexOf(node);
+				var indexOfChild = this.parentNodes.indexOf(node.right);
 
-				if (nodeIndex !== - 1) {
-					this.parentNodes[nodeIndex] = node.right;
+				if (indexOfNode !== - 1) {
+					this.parentNodes[indexOfNode] = node.right;
 				}
-				if (childIndex !== -1) {
-					this.parentNodes[childIndex] = node;
+				if (indexOfChild !== -1) {
+					this.parentNodes[indexOfChild] = node;
 				}
 
 				if (this.root === node) {
@@ -172,3 +167,4 @@ class MaxHeap {
 }
 
 module.exports = MaxHeap;
+
