@@ -11,13 +11,13 @@ class PriorityQueue {
 	}
 
 	push(data, priority) {
-		if (this.size() === this.maxSize)
+		if (this.heap.size() === this.maxSize)
 			throw new Error("Sorry, bro.. Max size is reached");
 		this.heap.push(data, priority);
 	}
 
 	shift() {
-		if (this.isEmpty())
+		if (this.heap.isEmpty())
 			throw new Error("Sorry, queue is empty!");
 		else{
 			var info;

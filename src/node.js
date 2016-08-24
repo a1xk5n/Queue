@@ -40,45 +40,64 @@ class Node {
 	}
 
 	swapWithParent() {
-		if (this.parent !== null) {
-			var swapParent = this.parent;
-			var swapChild = this;
-			var parentParent = this.parent.parent;
-			var leftParent = this.parent.left;
-			var rightParent = this.parent.right;
-			var leftChild = this.left;
-			var rightChild = this.right;
+		var swapParent = this.parent,
+			swapChild = this,
+			brother = null,
+			bro_dir,
+			rightIndex = "right",
+			leftIndex = "left";
 
-			if (leftChild !== null)
-				leftChild.parent = swapParent;
-			if (rightChild !== null)
-				rightChild.parent = swapParent;
-			swapParent.left = leftChild;
-			swapParent.right = rightChild;
-
-			swapChild.parent = swapParent;
-			if (parentParent !== null) {
-				if (swapParent === parentParent.left)
-					parentParent.left = swapChild;
-				else
-					parentParent.right = swapChild;
+		if (swapParent){
+			if (swapParent.left == swapChild){
+				brother = swapParent.right;
+				bro_dir = rightIndex;
 			}
-
-			if (rightParent === swapChild) {
-				if (leftParent !== null)
-					leftParent.parent = swapChild;
-				swapChild.left = leftParent;
-				swapChild.right = swapParent;
-				swapParent.parent = swapChild;
-
-			} else {
-				if (rightParent !== null)
-					rightParent.parent = swapChild;
-				swapChild.right = rightParent;
-				swapChild.left = swapParent;
-				swapParent.parent = swapChild;
+			else if (swapParent.right == swapChild){
+				brother = swapParent.left;
+				bro_dir = leftIndex;
 			}
 		}
+		else{
+			return;
+		}
+
+		if (swapParent.parent){
+			if (swapParent == swapParent.parent.right){
+				swapParent.parent.right = swapChild;
+			}
+			else if (swapParent == swapParent.parent.left){
+				swapParent.parent.left = swapChild;
+			}
+		}
+
+		if (this.left){
+			this.left.parent = this.parent;
+		}
+
+		if (this.right){
+			this.right.parent = this.parent;
+		}
+		
+		if (swapParent){
+			this.parent.left = this.left;
+			this.parent.right = this.right;
+			this.parent = swapParent.parent;
+			swapParent.parent = swapChild;
+		}
+
+		if (brother){
+			brother.parent = swapChild;
+		}
+
+		if (bro_dir == rightIndex){
+			swapChild.right = brother;
+			swapChild.left = swapParent;
+		}
+		else if (bro_dir == leftIndex){
+			swapChild.left = brother;
+			swapChild.right = swapParent;
+		}
+		
 	}
 
 }
