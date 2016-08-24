@@ -26,7 +26,7 @@ class Node {
 			this.right = null;
 		}
 		else{
-			throw new Error("No such child");
+			throw new Error("Passed node is not a child of this node");
 		}
 	}
 
@@ -37,32 +37,33 @@ class Node {
 	}
 
 	swapWithParent() {
-		let parent = this.parent,
-			me = this,
-			bro = null,
+		var swapParent = this.parent,
+			swapChild = this,
+			brother = null,
 			bro_dir,
-			parent_dir;
+			rightIndex = "right",
+			leftIndex = "left";
 
-		if (parent){
-			if (parent.left == me){
-				bro = parent.right;
-				bro_dir = 'right';
+		if (swapParent){
+			if (swapParent.left == swapChild){
+				brother = swapParent.right;
+				bro_dir = rightIndex;
 			}
-			else if (parent.right == me){
-				bro = parent.left;
-				bro_dir = 'left';
+			else if (swapParent.right == swapChild){
+				brother = swapParent.left;
+				bro_dir = leftIndex;
 			}
 		}
 		else{
 			return;
 		}
 
-		if (parent.parent){
-			if (parent == parent.parent.right){
-				parent.parent.right = me;
+		if (swapParent.parent){
+			if (swapParent == swapParent.parent.right){
+				swapParent.parent.right = swapChild;
 			}
-			else if (parent == parent.parent.left){
-				parent.parent.left = me;
+			else if (swapParent == swapParent.parent.left){
+				swapParent.parent.left = swapChild;
 			}
 		}
 
@@ -74,26 +75,25 @@ class Node {
 			this.right.parent = this.parent;
 		}
 		
-		if (parent){
+		if (swapParent){
 			this.parent.left = this.left;
 			this.parent.right = this.right;
-			this.parent = parent.parent;
-			parent.parent = me;
+			this.parent = swapParent.parent;
+			swapParent.parent = swapChild;
 		}
 
-		if (bro){
-			bro.parent = me;
+		if (brother){
+			brother.parent = swapChild;
 		}
 
-		if (bro_dir == 'right'){
-			me.right = bro;
-			me.left = parent;
+		if (bro_dir == rightIndex){
+			swapChild.right = brother;
+			swapChild.left = swapParent;
 		}
-		else if (bro_dir == 'left'){
-			me.left = bro;
-			me.right = parent;
+		else if (bro_dir == leftIndex){
+			swapChild.left = brother;
+			swapChild.right = swapParent;
 		}
-
 
 
 	}
